@@ -5,6 +5,10 @@
 - Default output format is Plain Text , you can change it with ( -t json or -t Plain Text )
 
 ### Example
-`go run main.go /blablabla/nginx-access.log -t json`
-or
-`go run main.go /blablabla/nginx-access.log -t json -o /blablabla/output.txt`
+- `./main /home/dimas/personal/LogicalTest/nginx-access.log -t json`
+
+- `./main /home/dimas/personal/LogicalTest/nginx-access.log -t json -o /blablabla/output.txt ` 
+
+- `go run main.go /blablabla/nginx-access.log -t json`
+
+- `go run main.go /blablabla/nginx-access.log -t json -o /blablabla/output.txt`

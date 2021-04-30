@@ -24,76 +24,87 @@ type Log struct {
 
 func main() {
 
-	// formatFlag := flag.String("t", "PlainText", "Defined Format")
-	// outputFlag := flag.String("o", "no-opt", "Output Log")
-	// fileArg := os.Args[1]
+	if os.Args[1] == "-h" {
+		fmt.Println(`
+		-t  Format output [json , PlainText]
+		-o  Outpath path file
 
-	// flag.Parse()
-	// fmt.Println(*formatFlag)
-	// fmt.Println(*outputFlag)
-
-	res, err := ioutil.ReadFile(os.Args[1])
-	if err != nil {
-		panic(err.Error())
-	}
-
-	regPattern := regexp.MustCompile(`(?P<ip>.+)-(.+)-(.+)\[(?P<timestamp>.+)]\s\"(?P<http_method>.+?)\s(?P<parameter>.+?)\s(?P<http_version>.+?)\"\s(?P<status>.+?)\s(?P<byte>.+?)\s"(?P<url>.+?)"\s"(?P<user_agent>.+?)"`)
-
-	temp := make(map[string]interface{})
-	match := regPattern.FindStringSubmatch(string(res))
-	for k, v := range regPattern.SubexpNames() {
-		if v == "" {
-			continue
-		}
-		temp[v] = match[k]
-	}
-
-	jsonRes, err := json.Marshal(temp)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	log := Log{}
-	err = json.Unmarshal(jsonRes, &log)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	listArgs := os.Args[2:]
-
-	formatFlag := "PlainText"
-	outputFlag := "no"
-
-	formatPosition := 0
-	outputPosition := 0
-
-	for k, v := range listArgs {
-		if v == "-t" {
-			formatPosition = k + 1
-			formatFlag = listArgs[formatPosition]
-		}
-
-		if v == "-o" {
-			outputPosition = k + 1
-			outputFlag = listArgs[outputPosition]
-		}
-	}
-
-	response := ""
-
-	if formatFlag == "json" {
-		response = string(jsonRes)
+		Examples: 
+		./main /home/dimas/personal/LogicalTest/nginx-access.log -t json
+		./main /home/dimas/personal/LogicalTest/nginx-access.log -t json -o /blablabla/output.txt 
+		go run main.go /blablabla/nginx-access.log -t json -> Print log output with JSON Format
+		go run main.go /blablabla/nginx-access.log -t PlainText -o /blablabla/output.txt -> Output log to a file with PlainText Format
+		`)
 	} else {
-		response = string(res)
-	}
-
-	if outputFlag == "no" {
-		fmt.Println(response)
-	} else {
-		fmt.Println("yes output")
-		err := ioutil.WriteFile(outputFlag, []byte(response), 0644)
+		res, err := ioutil.ReadFile(os.Args[1])
 		if err != nil {
 			panic(err.Error())
+		}
+
+		regPattern := regexp.MustCompile(`(?P<ip>.+)-(.+)-(.+)\[(?P<timestamp>.+)]\s\"(?P<http_method>.+?)\s(?P<parameter>.+?)\s(?P<http_version>.+?)\"\s(?P<status>.+?)\s(?P<byte>.+?)\s"(?P<url>.+?)"\s"(?P<user_agent>.+?)"`)
+
+		temp := make(map[string]interface{})
+		match := regPattern.FindStringSubmatch(string(res))
+		for k, v := range regPattern.SubexpNames() {
+			if v == "" {
+				continue
+			}
+			temp[v] = match[k]
+		}
+
+		jsonRes, err := json.Marshal(temp)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		log := Log{}
+		err = json.Unmarshal(jsonRes, &log)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		listArgs := os.Args[2:]
+
+		formatFlag := "PlainText"
+		outputFlag := "no"
+
+		formatPosition := 0
+		outputPosition := 0
+
+		for k, v := range listArgs {
+			if v == "-t" {
+				formatPosition = k + 1
+				formatFlag = listArgs[formatPosition]
+			}
+
+			if v == "-o" {
+				outputPosition = k + 1
+				outputFlag = listArgs[outputPosition]
+			}
+		}
+
+		response := ""
+
+		if formatFlag == "json" {
+			response = string(jsonRes)
+		} else {
+			response = string(res)
+		}
+
+		if outputFlag == "no" {
+			fmt.Println(response)
+		} else {
+			file, err := os.Create(outputFlag)
+
+			if err != nil {
+				return
+			}
+			defer file.Close()
+
+			err = ioutil.WriteFile(outputFlag, []byte(response), 0644)
+			if err != nil {
+				panic(err.Error())
+			}
 		}
 	}
 
