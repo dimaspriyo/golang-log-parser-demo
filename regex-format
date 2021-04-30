@@ -1,3 +1,0 @@
-(?P<ip>.+)-(.+)-(.+)\[(?P<timestamp>.+)]\s\"(?P<httpmethod>.+?)\s(?P<parameter>.+?)\s(?P<httpversion>.+?)\"\s(?P<status>.+?)\s(?P<byte>.+?)\s"(?P<url>.+?)"\s"(?P<useragent>.+?)"
-
-(?P<ip>.+)-(.+)-(.+)\[(?P<timestamp>.+)]\s\"(?P<httpmethod>.+?)\s(?P<parameter>.+?)\s(?P<httpversion>.+?)\"\s(?P<status>.+?)\s(?P<byte>.+?)\s"(?P<url>.+?)"\s"(?P<useragent>.+?)"
